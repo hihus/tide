@@ -36,6 +36,30 @@ func(this *Tconn) Read() []byte {
 	return buff
 }
 
+func (this *Tconn) ReadInto(buff []byte) []byte {
+	if _, err := io.ReadFull(this.con, this.head); err != nil {
+		return nil
+	}
+	var size = getUint(this.head, this.header)
+	if size > this.maxPackSize {
+		return nil
+	}
+	if len(buff) < size {
+		buff = make([]byte,size)
+	} else {
+		buff = buff[0:size]
+	}
+	if len(buff) == 0{
+		return nil
+	}
+	// 不等待空消息
+	if  _, err := io.ReadFull(this.con, buff); err != nil {
+		return nil
+	}
+
+	return buff
+}
+
 func(this *Tconn) Send(msg []byte) error{
 	_,err = this.con.Write(msg)
 	return err
