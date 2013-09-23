@@ -9,6 +9,7 @@ import (
 const(
 	MAXPACKSIAE 1024
 	HEADER 2
+	VERSION 1
 )
 //net.Conn封装
 type Tconn struct{
@@ -61,6 +62,14 @@ func (this *Tconn) ReadInto(buff []byte) []byte {
 }
 
 func(this *Tconn) Send(msg []byte) error{
+	size := len(msg)
+	n_msg := make([]byte,size+this.header)
+	setUint(n_msg,this.header,size)
+	n_msg[this.header:] = msg
+	_,err := this.con.Write(n_msg)
+	return err
+}
+func(this *Tconn) SendNoHeader(msg []byte) error{
 	_,err = this.con.Write(msg)
 	return err
 }
