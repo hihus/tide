@@ -4,7 +4,7 @@ import "./tide"
 import "time"
 import "strconv"
 
-func send(con *tide.Tconn,out chan int) {
+func send(con *tide.Tconn, out chan int) {
 	for i := 0; i <= 20; i++ {
 		con.Send([]byte("ping" + strconv.Itoa(i)))
 		println("send ths msg :" + "ping" + strconv.Itoa(i))
@@ -21,13 +21,13 @@ func read(con *tide.Tconn) {
 
 func main() {
 	var out chan int = make(chan int)
-	cli, err := tide.TConnect("tcp","127.0.0.1:8088")
+	cli, err := tide.TConnect("tcp", "127.0.0.1:8088")
 	if err != nil {
 		println(err)
 		return
 	}
 	defer cli.Close()
-    println("this client runing ")
+	println("this client runing ")
 	go send(cli, out)
 	go read(cli)
 	<-out
