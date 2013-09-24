@@ -6,10 +6,14 @@ func dealClient(con *tide.Tconn) {
 	defer con.Close()
 	println("link a client")
 	for {
-		t_msg := con.Read()
+		t_msg, err := con.Read()
+		if t_msg == nil && err != nil {
+			println("disconnect the client!")
+			return
+		}
 		msg := string(t_msg)
-		if msg == "ping1" || msg == "ping13" {
-			con.Send([]byte("pong1+13"))
+		if msg == "按实际的发生" {
+			con.Send([]byte("pong!!!"))
 			println("send msg to client :" + msg)
 		}
 	}

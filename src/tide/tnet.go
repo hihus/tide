@@ -19,20 +19,20 @@ type Tconn struct {
 	head        []byte
 }
 
-func (this *Tconn) Read() []byte {
+func (this *Tconn) Read() ([]byte, error) {
 	if _, err := io.ReadFull(this.con, this.head); err != nil {
-		return nil
+		return nil, err
 	}
 	size := getUint16(this.head)
 	buff := make([]byte, size)
 	if len(buff) == 0 {
-		return nil
+		return nil, nil
 	}
-	if _, err1 := io.ReadFull(this.con, buff); err1 != nil {
-		return nil
+	_, err1 := io.ReadFull(this.con, buff)
+	if err1 != nil {
+		return nil, err1
 	}
-	println(string(buff))
-	return buff
+	return buff, nil
 }
 
 func (this *Tconn) ReadInto(buff []byte) []byte {
@@ -63,7 +63,7 @@ func (this *Tconn) Send(msg []byte) error {
 	size := len(msg)
 	n_msg := make([]byte, size+this.header)
 	setUint16(n_msg, uint16(size))
-	n_msg = append(n_msg, msg...)
+	copy(n_msg[this.header:], msg)
 	_, err := this.con.Write(n_msg)
 	return err
 }
