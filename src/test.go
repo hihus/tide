@@ -12,6 +12,7 @@ func dealClient(con *tide.Tconn) {
 			return
 		}
 		msg := string(t_msg)
+		println(msg)
 		if msg == "按实际的发生" {
 			con.Send([]byte("pong!!!"))
 			println("send msg to client :" + msg)

@@ -23,8 +23,11 @@ func (this *Tconn) Read() ([]byte, error) {
 	if _, err := io.ReadFull(this.con, this.head); err != nil {
 		return nil, err
 	}
-	size := getUint16(this.head)
+	size := getUint(this.head, this.header)
 	buff := make([]byte, size)
+	if size > this.maxPackSize {
+		return nil, nil
+	}
 	if len(buff) == 0 {
 		return nil, nil
 	}
@@ -58,11 +61,13 @@ func (this *Tconn) ReadInto(buff []byte) []byte {
 
 	return buff
 }
+func Readline() {
 
+}
 func (this *Tconn) Send(msg []byte) error {
 	size := len(msg)
 	n_msg := make([]byte, size+this.header)
-	setUint16(n_msg, uint16(size))
+	setUint(n_msg, this.header, size)
 	copy(n_msg[this.header:], msg)
 	_, err := this.con.Write(n_msg)
 	return err
